@@ -1326,9 +1326,9 @@ const depoimentos = [
 let currentIndex = 0;
 let isAnimating = false;
 
-// Variáveis para controle de arrastar
 let isDragging = false;
 let startX = 0;
+let startY = 0;
 let currentTranslate = 0;
 let prevTranslate = 0;
 let animationID = 0;
@@ -1341,7 +1341,6 @@ const progressIndicator = document.getElementById('progressIndicator');
 function createDepoimentoCard(depoimento) {
     const card = document.createElement('div');
     card.className = 'depoimento-card';
-
     card.innerHTML = `
         <div class="depoimento-container">
             <div class="depoimento-foto">
@@ -1356,7 +1355,6 @@ function createDepoimentoCard(depoimento) {
             </div>
         </div>
     `;
-
     return card;
 }
 
@@ -1379,26 +1377,18 @@ function updateProgressIndicators() {
 
 function renderSlider() {
     slider.innerHTML = '';
-    
-    // Adicionar cards em sequência tripla para efeito contínuo
     const tripleDepoimentos = [...depoimentos, ...depoimentos, ...depoimentos];
-    
     tripleDepoimentos.forEach((depoimento) => {
         const card = createDepoimentoCard(depoimento);
         slider.appendChild(card);
     });
-    
-    // Posicionar no conjunto do meio
     currentIndex = depoimentos.length;
     updateSliderPosition();
 }
 
 function getCardWidth() {
     const cards = slider.querySelectorAll('.depoimento-card');
-    if (cards.length > 0) {
-        return cards[0].offsetWidth + 30; // 30px é o gap do flex
-    }
-    return slider.offsetWidth; // fallback
+    return cards.length > 0 ? cards[0].offsetWidth + 30 : slider.offsetWidth;
 }
 
 function updateSliderPosition(noAnim = false) {
@@ -1406,37 +1396,23 @@ function updateSliderPosition(noAnim = false) {
     const containerWidth = slider.parentElement.offsetWidth;
     const centerOffset = (containerWidth - (cardWidth - 30)) / 2;
     const translateX = centerOffset - (currentIndex * cardWidth);
-    
-    if (noAnim) {
-        slider.style.transition = 'none';
-    } else {
-        slider.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-    }
-    
+
+    slider.style.transition = noAnim ? 'none' : 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
     slider.style.transform = `translateX(${translateX}px)`;
-    
-    // Atualizar classes de destaque
+
     const cards = slider.querySelectorAll('.depoimento-card');
     cards.forEach((card, index) => {
         card.classList.toggle('center', index === currentIndex);
-        if (noAnim && index === currentIndex) {
-            card.classList.add('no-anim');
-        } else {
-            card.classList.remove('no-anim');
-        }
     });
-    
+
     updateProgressIndicators();
 }
 
 function goToSlide(index) {
     if (isAnimating) return;
-
-    slider.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
     isAnimating = true;
-    currentIndex = depoimentos.length + index; // Mapear para o conjunto do meio
+    currentIndex = depoimentos.length + index;
     updateSliderPosition();
-
     setTimeout(() => {
         handleInfiniteLoop();
         isAnimating = false;
@@ -1444,110 +1420,86 @@ function goToSlide(index) {
 }
 
 function handleInfiniteLoop() {
-    // Se passou do último card do meio, reposiciona instantaneamente para o primeiro do meio
     if (currentIndex >= depoimentos.length * 2) {
         slider.style.transition = 'none';
         currentIndex = depoimentos.length;
         updateSliderPosition(true);
-        void slider.offsetWidth;
-        slider.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-        setTimeout(() => updateSliderPosition(false), 20);
-    }
-    // Se passou do primeiro card do meio indo para trás, reposiciona instantaneamente para o último do meio
-    else if (currentIndex < depoimentos.length) {
+    } else if (currentIndex < depoimentos.length) {
         slider.style.transition = 'none';
         currentIndex = depoimentos.length * 2 - 1;
         updateSliderPosition(true);
-        void slider.offsetWidth;
-        slider.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-        setTimeout(() => updateSliderPosition(false), 20);
     }
 }
 
 function nextSlide() {
-    if (!isAnimating) {
-        const nextIndex = currentIndex + 1;
-        currentIndex = nextIndex;
-        isAnimating = true;
-        updateSliderPosition();
-        
-        setTimeout(() => {
-            handleInfiniteLoop();
-            isAnimating = false;
-        }, 600);
-    }
+    if (isAnimating) return;
+    currentIndex++;
+    isAnimating = true;
+    updateSliderPosition();
+    setTimeout(() => {
+        handleInfiniteLoop();
+        isAnimating = false;
+    }, 600);
 }
 
 function prevSlide() {
-    if (!isAnimating) {
-        const prevIndex = currentIndex - 1;
-        currentIndex = prevIndex;
-        isAnimating = true;
-        updateSliderPosition();
-        
-        setTimeout(() => {
-            handleInfiniteLoop();
-            isAnimating = false;
-        }, 600);
-    }
-}
-
-// Funções para arrastar/swipe
-function getPositionX(event) {
-    return event.type.includes('mouse') ? event.clientX : event.touches[0].clientX;
-}
-
-function dragStart(event) {
     if (isAnimating) return;
-    
+    currentIndex--;
+    isAnimating = true;
+    updateSliderPosition();
+    setTimeout(() => {
+        handleInfiniteLoop();
+        isAnimating = false;
+    }, 600);
+}
+
+function getPositionX(e) {
+    return e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+}
+function getPositionY(e) {
+    return e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+}
+
+function dragStart(e) {
+    if (isAnimating) return;
     isDragging = true;
-    startX = getPositionX(event);
+    startX = getPositionX(e);
+    startY = getPositionY(e);
     animationID = requestAnimationFrame(animation);
-    
-    // Prevenir comportamento padrão em mobile
-    if (event.type === 'touchstart') {
-        event.preventDefault();
-    }
-    
-    // Parar autoplay durante o drag
     stopAutoPlay();
 }
 
-function dragMove(event) {
+function dragMove(e) {
     if (!isDragging) return;
-    
-    const currentX = getPositionX(event);
+    const currentX = getPositionX(e);
+    const currentY = getPositionY(e);
+
+    const dx = Math.abs(currentX - startX);
+    const dy = Math.abs(currentY - startY);
+
+    // só previne o scroll se for horizontal
+    if (dx > dy) e.preventDefault();
+
     currentTranslate = prevTranslate + currentX - startX;
-    
-    // Prevenir comportamento padrão
-    event.preventDefault();
 }
 
 function dragEnd() {
     if (!isDragging) return;
-    
     isDragging = false;
     cancelAnimationFrame(animationID);
-    
+
     const movedBy = currentTranslate - prevTranslate;
-    const threshold = getCardWidth() * 0.2; // 20% da largura do card
-    
+    const threshold = getCardWidth() * 0.2;
+
     if (Math.abs(movedBy) > threshold) {
-        if (movedBy > 0) {
-            prevSlide();
-        } else {
-            nextSlide();
-        }
+        movedBy > 0 ? prevSlide() : nextSlide();
     } else {
-        // Voltar para a posição original
         updateSliderPosition();
     }
-    
-    // Reset
+
     currentTranslate = 0;
     prevTranslate = 0;
-    
-    // Reiniciar autoplay
+
     setTimeout(() => {
         if (!slider.matches(':hover')) {
             startAutoPlay();
@@ -1561,46 +1513,35 @@ function animation() {
         const containerWidth = slider.parentElement.offsetWidth;
         const centerOffset = (containerWidth - (cardWidth - 30)) / 2;
         const baseTranslateX = centerOffset - (currentIndex * cardWidth);
-        
         slider.style.transform = `translateX(${baseTranslateX + currentTranslate}px)`;
         requestAnimationFrame(animation);
     }
 }
 
-// Event listeners para mouse
 slider.addEventListener('mousedown', dragStart);
 document.addEventListener('mousemove', dragMove);
 document.addEventListener('mouseup', dragEnd);
 
-// Event listeners para touch
 slider.addEventListener('touchstart', dragStart, { passive: false });
 document.addEventListener('touchmove', dragMove, { passive: false });
 document.addEventListener('touchend', dragEnd);
 
-// Prevenir seleção de texto durante o drag
 slider.addEventListener('selectstart', (e) => e.preventDefault());
-
-// Event listeners dos botões
 nextBtn.addEventListener('click', nextSlide);
 prevBtn.addEventListener('click', prevSlide);
 
-// Controle por teclado
 document.addEventListener('keydown', (e) => {
     if (isAnimating) return;
     if (e.key === 'ArrowLeft') prevSlide();
     if (e.key === 'ArrowRight') nextSlide();
 });
 
-// Auto-play
 let autoPlayInterval;
 function startAutoPlay() {
     autoPlayInterval = setInterval(() => {
-        if (!isAnimating && !isDragging) {
-            nextSlide();
-        }
+        if (!isAnimating && !isDragging) nextSlide();
     }, 5000);
 }
-
 function stopAutoPlay() {
     clearInterval(autoPlayInterval);
 }
@@ -1608,15 +1549,14 @@ function stopAutoPlay() {
 slider.addEventListener('mouseenter', stopAutoPlay);
 slider.addEventListener('mouseleave', startAutoPlay);
 
-// Redimensionar quando a janela muda de tamanho
 window.addEventListener('resize', () => {
     setTimeout(updateSliderPosition, 100);
 });
 
-// Inicializar
 renderSlider();
 createProgressIndicators();
 startAutoPlay();
+
 
 </script>
 

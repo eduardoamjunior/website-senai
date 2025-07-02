@@ -1518,13 +1518,15 @@ function animation() {
     }
 }
 
+// Eventos mouse
 slider.addEventListener('mousedown', dragStart);
 document.addEventListener('mousemove', dragMove);
 document.addEventListener('mouseup', dragEnd);
 
+// Eventos touch (apenas no slider)
 slider.addEventListener('touchstart', dragStart, { passive: false });
-document.addEventListener('touchmove', dragMove, { passive: false });
-document.addEventListener('touchend', dragEnd);
+slider.addEventListener('touchmove', dragMove, { passive: false });
+slider.addEventListener('touchend', dragEnd);
 
 slider.addEventListener('selectstart', (e) => e.preventDefault());
 nextBtn.addEventListener('click', nextSlide);

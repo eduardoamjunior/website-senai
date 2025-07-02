@@ -1291,210 +1291,333 @@ footer a {
 <script>
 
 const depoimentos = [
-            {
-                nome: "Cleiton",
-                cargo: "Coordenador SENAI \"Félix Guisard\"",
-                foto: "https://res.cloudinary.com/dm6x35s7n/image/upload/v1751390971/Frame_14_dwizcw.png",
-                texto: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla eu leo in turpis dictum luctus a eu elit. Suspendisse ornare eros nec eros iaculis mattis. iscing elit. Nulla eu leo in turpis dictum luctus a eu elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla eu leo in turpis dictum luctus a eu elit. Suspendisse ornare eros nec eros iaculis mattis. iscing elit. Nulla eu leo in turpis dictum luctus a eu elit."
-            },
-            {
-                nome: "Maria Silva",
-                cargo: "Diretora de Recursos Humanos",
-                foto: "https://res.cloudinary.com/dm6x35s7n/image/upload/v1751390971/Frame_14_dwizcw.png",
-                texto: "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper."
-            },
-            {
-                nome: "João Santos",
-                cargo: "Gerente de Projetos",
-                foto: "https://res.cloudinary.com/dm6x35s7n/image/upload/v1751390971/Frame_14_dwizcw.png",
-                texto: "Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum."
-            },
-            {
-                nome: "Ana Costa",
-                cargo: "Coordenadora Pedagógica",
-                foto: "https://res.cloudinary.com/dm6x35s7n/image/upload/v1751390971/Frame_14_dwizcw.png",
-                texto: "Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt."
-            },
-            {
-                nome: "Pedro Oliveira",
-                cargo: "Supervisor de Qualidade",
-                foto: "https://res.cloudinary.com/dm6x35s7n/image/upload/v1751390971/Frame_14_dwizcw.png",
-                texto: "Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc, quis gravida magna mi a libero. Fusce vulputate eleifend sapien."
-            }
-        ];
+    {
+        nome: "Cleiton",
+        cargo: "Coordenador SENAI \"Félix Guisard\"",
+        foto: "https://res.cloudinary.com/dm6x35s7n/image/upload/v1751390971/Frame_14_dwizcw.png",
+        texto: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla eu leo in turpis dictum luctus a eu elit. Suspendisse ornare eros nec eros iaculis mattis. iscing elit. Nulla eu leo in turpis dictum luctus a eu elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla eu leo in turpis dictum luctus a eu elit. Suspendisse ornare eros nec eros iaculis mattis. iscing elit. Nulla eu leo in turpis dictum luctus a eu elit."
+    },
+    {
+        nome: "Maria Silva",
+        cargo: "Diretora de Recursos Humanos",
+        foto: "https://res.cloudinary.com/dm6x35s7n/image/upload/v1751390971/Frame_14_dwizcw.png",
+        texto: "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper."
+    },
+    {
+        nome: "João Santos",
+        cargo: "Gerente de Projetos",
+        foto: "https://res.cloudinary.com/dm6x35s7n/image/upload/v1751390971/Frame_14_dwizcw.png",
+        texto: "Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum."
+    },
+    {
+        nome: "Ana Costa",
+        cargo: "Coordenadora Pedagógica",
+        foto: "https://res.cloudinary.com/dm6x35s7n/image/upload/v1751390971/Frame_14_dwizcw.png",
+        texto: "Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt."
+    },
+    {
+        nome: "Pedro Oliveira",
+        cargo: "Supervisor de Qualidade",
+        foto: "https://res.cloudinary.com/dm6x35s7n/image/upload/v1751390971/Frame_14_dwizcw.png",
+        texto: "Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc, quis gravida magna mi a libero. Fusce vulputate eleifend sapien."
+    }
+];
 
-        let currentIndex = 0;
-        let isAnimating = false;
+let currentIndex = 0;
+let isAnimating = false;
 
-        const slider = document.getElementById('slider');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
+// Variáveis para controle de arrastar
+let isDragging = false;
+let startX = 0;
+let currentTranslate = 0;
+let prevTranslate = 0;
+let animationID = 0;
 
-        function createDepoimentoCard(depoimento) {
-            const card = document.createElement('div');
-            card.className = 'depoimento-card';
+const slider = document.getElementById('slider');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const progressIndicator = document.getElementById('progressIndicator');
 
-            card.innerHTML = `
-                <div class="depoimento-container">
-                    <div class="depoimento-foto">
-                        <img src="${depoimento.foto}" alt="${depoimento.nome}" />
-                    </div>
-                    <div class="depoimento-conteudo">
-                        <div class="depoimento-nome-cargo">
-                            <h2>${depoimento.nome}</h2>
-                            <h4>${depoimento.cargo}</h4>
-                        </div>
-                        <p>${depoimento.texto}</p>
-                    </div>
+function createDepoimentoCard(depoimento) {
+    const card = document.createElement('div');
+    card.className = 'depoimento-card';
+
+    card.innerHTML = `
+        <div class="depoimento-container">
+            <div class="depoimento-foto">
+                <img src="${depoimento.foto}" alt="${depoimento.nome}" />
+            </div>
+            <div class="depoimento-conteudo">
+                <div class="depoimento-nome-cargo">
+                    <h2>${depoimento.nome}</h2>
+                    <h4>${depoimento.cargo}</h4>
                 </div>
-            `;
+                <p>${depoimento.texto}</p>
+            </div>
+        </div>
+    `;
 
-            return card;
+    return card;
+}
+
+function createProgressIndicators() {
+    progressIndicator.innerHTML = '';
+    depoimentos.forEach((_, index) => {
+        const dot = document.createElement('div');
+        dot.className = `progress-dot ${index === currentIndex ? 'active' : ''}`;
+        dot.addEventListener('click', () => goToSlide(index));
+        progressIndicator.appendChild(dot);
+    });
+}
+
+function updateProgressIndicators() {
+    const dots = progressIndicator.querySelectorAll('.progress-dot');
+    dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === (currentIndex - depoimentos.length) % depoimentos.length);
+    });
+}
+
+function renderSlider() {
+    slider.innerHTML = '';
+    
+    // Adicionar cards em sequência tripla para efeito contínuo
+    const tripleDepoimentos = [...depoimentos, ...depoimentos, ...depoimentos];
+    
+    tripleDepoimentos.forEach((depoimento) => {
+        const card = createDepoimentoCard(depoimento);
+        slider.appendChild(card);
+    });
+    
+    // Posicionar no conjunto do meio
+    currentIndex = depoimentos.length;
+    updateSliderPosition();
+}
+
+function getCardWidth() {
+    const cards = slider.querySelectorAll('.depoimento-card');
+    if (cards.length > 0) {
+        return cards[0].offsetWidth + 30; // 30px é o gap do flex
+    }
+    return slider.offsetWidth; // fallback
+}
+
+function updateSliderPosition(noAnim = false) {
+    const cardWidth = getCardWidth();
+    const containerWidth = slider.parentElement.offsetWidth;
+    const centerOffset = (containerWidth - (cardWidth - 30)) / 2;
+    const translateX = centerOffset - (currentIndex * cardWidth);
+    
+    if (noAnim) {
+        slider.style.transition = 'none';
+    } else {
+        slider.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    }
+    
+    slider.style.transform = `translateX(${translateX}px)`;
+    
+    // Atualizar classes de destaque
+    const cards = slider.querySelectorAll('.depoimento-card');
+    cards.forEach((card, index) => {
+        card.classList.toggle('center', index === currentIndex);
+        if (noAnim && index === currentIndex) {
+            card.classList.add('no-anim');
+        } else {
+            card.classList.remove('no-anim');
         }
+    });
+    
+    updateProgressIndicators();
+}
 
-        function createProgressIndicators() {
-            progressIndicator.innerHTML = '';
-            depoimentos.forEach((_, index) => {
-                const dot = document.createElement('div');
-                dot.className = `progress-dot ${index === currentIndex ? 'active' : ''}`;
-                dot.addEventListener('click', () => goToSlide(index));
-                progressIndicator.appendChild(dot);
-            });
+function goToSlide(index) {
+    if (isAnimating) return;
+
+    slider.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    isAnimating = true;
+    currentIndex = depoimentos.length + index; // Mapear para o conjunto do meio
+    updateSliderPosition();
+
+    setTimeout(() => {
+        handleInfiniteLoop();
+        isAnimating = false;
+    }, 600);
+}
+
+function handleInfiniteLoop() {
+    // Se passou do último card do meio, reposiciona instantaneamente para o primeiro do meio
+    if (currentIndex >= depoimentos.length * 2) {
+        slider.style.transition = 'none';
+        currentIndex = depoimentos.length;
+        updateSliderPosition(true);
+        void slider.offsetWidth;
+        slider.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        setTimeout(() => updateSliderPosition(false), 20);
+    }
+    // Se passou do primeiro card do meio indo para trás, reposiciona instantaneamente para o último do meio
+    else if (currentIndex < depoimentos.length) {
+        slider.style.transition = 'none';
+        currentIndex = depoimentos.length * 2 - 1;
+        updateSliderPosition(true);
+        void slider.offsetWidth;
+        slider.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        setTimeout(() => updateSliderPosition(false), 20);
+    }
+}
+
+function nextSlide() {
+    if (!isAnimating) {
+        const nextIndex = currentIndex + 1;
+        currentIndex = nextIndex;
+        isAnimating = true;
+        updateSliderPosition();
+        
+        setTimeout(() => {
+            handleInfiniteLoop();
+            isAnimating = false;
+        }, 600);
+    }
+}
+
+function prevSlide() {
+    if (!isAnimating) {
+        const prevIndex = currentIndex - 1;
+        currentIndex = prevIndex;
+        isAnimating = true;
+        updateSliderPosition();
+        
+        setTimeout(() => {
+            handleInfiniteLoop();
+            isAnimating = false;
+        }, 600);
+    }
+}
+
+// Funções para arrastar/swipe
+function getPositionX(event) {
+    return event.type.includes('mouse') ? event.clientX : event.touches[0].clientX;
+}
+
+function dragStart(event) {
+    if (isAnimating) return;
+    
+    isDragging = true;
+    startX = getPositionX(event);
+    animationID = requestAnimationFrame(animation);
+    
+    // Prevenir comportamento padrão em mobile
+    if (event.type === 'touchstart') {
+        event.preventDefault();
+    }
+    
+    // Parar autoplay durante o drag
+    stopAutoPlay();
+}
+
+function dragMove(event) {
+    if (!isDragging) return;
+    
+    const currentX = getPositionX(event);
+    currentTranslate = prevTranslate + currentX - startX;
+    
+    // Prevenir comportamento padrão
+    event.preventDefault();
+}
+
+function dragEnd() {
+    if (!isDragging) return;
+    
+    isDragging = false;
+    cancelAnimationFrame(animationID);
+    
+    const movedBy = currentTranslate - prevTranslate;
+    const threshold = getCardWidth() * 0.2; // 20% da largura do card
+    
+    if (Math.abs(movedBy) > threshold) {
+        if (movedBy > 0) {
+            prevSlide();
+        } else {
+            nextSlide();
         }
-
-        function updateProgressIndicators() {
-            const dots = progressIndicator.querySelectorAll('.progress-dot');
-            dots.forEach((dot, index) => {
-                dot.classList.toggle('active', index === currentIndex);
-            });
+    } else {
+        // Voltar para a posição original
+        updateSliderPosition();
+    }
+    
+    // Reset
+    currentTranslate = 0;
+    prevTranslate = 0;
+    
+    // Reiniciar autoplay
+    setTimeout(() => {
+        if (!slider.matches(':hover')) {
+            startAutoPlay();
         }
+    }, 1000);
+}
 
-        function renderSlider() {
-            slider.innerHTML = '';
-            
-            // Adicionar cards em sequência tripla para efeito contínuo
-            const tripleDepoimentos = [...depoimentos, ...depoimentos, ...depoimentos];
-            
-            tripleDepoimentos.forEach((depoimento) => {
-                const card = createDepoimentoCard(depoimento);
-                slider.appendChild(card);
-            });
-            
-            // Posicionar no conjunto do meio
-            currentIndex = depoimentos.length;
-            updateSliderPosition();
+function animation() {
+    if (isDragging) {
+        const cardWidth = getCardWidth();
+        const containerWidth = slider.parentElement.offsetWidth;
+        const centerOffset = (containerWidth - (cardWidth - 30)) / 2;
+        const baseTranslateX = centerOffset - (currentIndex * cardWidth);
+        
+        slider.style.transform = `translateX(${baseTranslateX + currentTranslate}px)`;
+        requestAnimationFrame(animation);
+    }
+}
+
+// Event listeners para mouse
+slider.addEventListener('mousedown', dragStart);
+document.addEventListener('mousemove', dragMove);
+document.addEventListener('mouseup', dragEnd);
+
+// Event listeners para touch
+slider.addEventListener('touchstart', dragStart, { passive: false });
+document.addEventListener('touchmove', dragMove, { passive: false });
+document.addEventListener('touchend', dragEnd);
+
+// Prevenir seleção de texto durante o drag
+slider.addEventListener('selectstart', (e) => e.preventDefault());
+
+// Event listeners dos botões
+nextBtn.addEventListener('click', nextSlide);
+prevBtn.addEventListener('click', prevSlide);
+
+// Controle por teclado
+document.addEventListener('keydown', (e) => {
+    if (isAnimating) return;
+    if (e.key === 'ArrowLeft') prevSlide();
+    if (e.key === 'ArrowRight') nextSlide();
+});
+
+// Auto-play
+let autoPlayInterval;
+function startAutoPlay() {
+    autoPlayInterval = setInterval(() => {
+        if (!isAnimating && !isDragging) {
+            nextSlide();
         }
+    }, 5000);
+}
 
-        function updateSliderPosition(noAnim = false) {
-            // Pega o card central para calcular largura real
-            const cards = slider.querySelectorAll('.depoimento-card');
-            let cardWidth = 0;
-            if (cards.length > 0) {
-                cardWidth = cards[0].offsetWidth + 30; // 30px é o gap do flex
-            } else {
-                cardWidth = slider.offsetWidth; // fallback
-            }
-            const containerWidth = slider.parentElement.offsetWidth;
-            // Usa a largura real do card para centralizar
-            const centerOffset = (containerWidth - (cardWidth - 30)) / 2;
+function stopAutoPlay() {
+    clearInterval(autoPlayInterval);
+}
 
-            const translateX = centerOffset - (currentIndex * cardWidth);
-            slider.style.transform = `translateX(${translateX}px)`;
-            
-            // Atualizar classes de destaque
-            cards.forEach((card, index) => {
-                card.classList.toggle('center', index === currentIndex);
-                if (noAnim && index === currentIndex) {
-                    card.classList.add('no-anim');
-                } else {
-                    card.classList.remove('no-anim');
-                }
-            });
-        }
+slider.addEventListener('mouseenter', stopAutoPlay);
+slider.addEventListener('mouseleave', startAutoPlay);
 
-        function goToSlide(index) {
-            if (isAnimating) return;
+// Redimensionar quando a janela muda de tamanho
+window.addEventListener('resize', () => {
+    setTimeout(updateSliderPosition, 100);
+});
 
-            slider.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-            isAnimating = true;
-            currentIndex = index;
-            updateSliderPosition();
+// Inicializar
+renderSlider();
+createProgressIndicators();
+startAutoPlay();
 
-            setTimeout(() => {
-                // Se passou do último card do meio, reposiciona instantaneamente para o primeiro do meio
-                if (currentIndex >= depoimentos.length * 2) {
-                    slider.style.transition = 'none';
-                    currentIndex = depoimentos.length;
-                    updateSliderPosition(true); // sem transição no card central
-                    void slider.offsetWidth;
-                    slider.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                    // Remove a classe no-anim após um frame
-                    setTimeout(() => updateSliderPosition(false), 20);
-                }
-                // Se passou do primeiro card do meio indo para trás, reposiciona instantaneamente para o último do meio
-                else if (currentIndex < depoimentos.length) {
-                    slider.style.transition = 'none';
-                    currentIndex = depoimentos.length * 2 - 1;
-                    updateSliderPosition(true); // sem transição no card central
-                    void slider.offsetWidth;
-                    slider.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                    setTimeout(() => updateSliderPosition(false), 20);
-                }
-                isAnimating = false;
-            }, 600);
-        }
-
-        function nextSlide() {
-            if (!isAnimating) {
-                const nextIndex = currentIndex + 1;
-                goToSlide(nextIndex);
-            }
-        }
-
-        function prevSlide() {
-            if (!isAnimating) {
-                const prevIndex = currentIndex - 1;
-                goToSlide(prevIndex);
-            }
-        }
-
-        // Event listeners
-        nextBtn.addEventListener('click', nextSlide);
-        prevBtn.addEventListener('click', prevSlide);
-
-        // Controle por teclado
-        document.addEventListener('keydown', (e) => {
-            if (isAnimating) return;
-            if (e.key === 'ArrowLeft') prevSlide();
-            if (e.key === 'ArrowRight') nextSlide();
-        });
-
-        // Auto-play
-        let autoPlayInterval;
-        function startAutoPlay() {
-            autoPlayInterval = setInterval(() => {
-                if (!isAnimating) {
-                    nextSlide();
-                }
-            }, 5000);
-        }
-
-        function stopAutoPlay() {
-            clearInterval(autoPlayInterval);
-        }
-
-        slider.addEventListener('mouseenter', stopAutoPlay);
-        slider.addEventListener('mouseleave', startAutoPlay);
-
-        // Redimensionar quando a janela muda de tamanho
-        window.addEventListener('resize', () => {
-            setTimeout(updateSliderPosition, 100);
-        });
-
-        // Inicializar
-        renderSlider();
-        createProgressIndicators();
-        startAutoPlay();
 </script>
 
 </html>
